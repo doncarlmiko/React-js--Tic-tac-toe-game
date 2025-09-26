@@ -1,0 +1,19 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.board-row{
+  border: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.square{
+  border: 1px solid;
+  width: 5rem;
+  height: 5rem;
+  font-size:2em;
+  font-weight: bolder;
+}
