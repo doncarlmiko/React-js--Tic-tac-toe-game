@@ -20,6 +20,8 @@ function Square({value, onSquareClick}:{value:string, onSquareClick: () => void}
 
 // Board component: This is the main game area, managing all squares and game logic.
 export default function Board() {
+
+  const [xIsNext, setXIsNext] = useState(true);
   // `squares` stores the state of all 9 squares, allowing React to re-render when a square changes.
   const [squares, setSquares] = useState(Array(9).fill(null));
   
@@ -28,12 +30,20 @@ export default function Board() {
     // We create a new array to represent the next state of the squares.
     // This is important because React needs a *new* object to detect changes and re-render efficiently.
     const nextSquares = squares.slice();
-    // Mark the clicked square with an 'X'.
-    nextSquares[i] = "X";
+    //returns early to check if the square already has an 'X' or 'O'
+    if (squares[i]) {
+      return;
+    }
+
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
     // Tell React to update the squares, which will make the board re-render with the new 'X'.
     setSquares(nextSquares);
-    // For debugging, we log the board's state after each move.
-    console.log(nextSquares);
+    setXIsNext(!xIsNext);
+    console.log(nextSquares);  
   }
   
   return (
@@ -60,3 +70,23 @@ export default function Board() {
     </>
   );
 }
+
+// function calculateWinner(squares) {
+//   const lines = [
+//     [0, 1, 2],
+//     [3, 4, 5],
+//     [6, 7, 8],
+//     [0, 3, 6],
+//     [1, 4, 7],
+//     [2, 5, 8],
+//     [0, 4, 8],
+//     [2, 4, 6]
+//   ];
+//   for (let i = 0; i < lines.length; i++) {
+//     const [a, b, c] = lines[i];
+//     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+//       return squares[a];
+//     }
+//   }
+//   return null;
+// }
