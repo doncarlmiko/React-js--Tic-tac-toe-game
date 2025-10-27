@@ -30,8 +30,10 @@ export default function Board() {
     // We create a new array to represent the next state of the squares.
     // This is important because React needs a *new* object to detect changes and re-render efficiently.
     const nextSquares = squares.slice();
+
     //returns early to check if the square already has an 'X' or 'O'
-    if (squares[i]) {
+    //or if the game is already won
+    if (squares[i] || calculateWinner(squares)) {
       return;
     }
 
@@ -44,6 +46,14 @@ export default function Board() {
     setSquares(nextSquares);
     setXIsNext(!xIsNext);
     console.log(nextSquares);  
+  }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = "Winner: " + winner;
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
   }
   
   return (
@@ -67,26 +77,30 @@ export default function Board() {
         <Square value={squares[7]} onSquareClick={() => handleClick(7)}/>
         <Square value={squares[8]} onSquareClick={() => handleClick(8)}/>
       </div>
+
+      <div className="status">{status}</div>
     </>
   );
 }
 
-// function calculateWinner(squares) {
-//   const lines = [
-//     [0, 1, 2],
-//     [3, 4, 5],
-//     [6, 7, 8],
-//     [0, 3, 6],
-//     [1, 4, 7],
-//     [2, 5, 8],
-//     [0, 4, 8],
-//     [2, 4, 6]
-//   ];
-//   for (let i = 0; i < lines.length; i++) {
-//     const [a, b, c] = lines[i];
-//     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-//       return squares[a];
-//     }
-//   }
-//   return null;
-// }
+//function to calculate the winner
+function calculateWinner(squares: string[]) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
