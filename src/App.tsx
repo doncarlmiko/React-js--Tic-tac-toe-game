@@ -19,11 +19,11 @@ function Square({value, onSquareClick}:{value:string, onSquareClick: () => void}
 }
 
 // Board component: This is the main game area, managing all squares and game logic.
-export default function Board() {
+function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean, squares: string[], onPlay: (nextSquares: string[]) => void }) {
 
-  const [xIsNext, setXIsNext] = useState(true);
-  // `squares` stores the state of all 9 squares, allowing React to re-render when a square changes.
-  const [squares, setSquares] = useState(Array(9).fill(null));
+  // const [xIsNext, setXIsNext] = useState(true);
+  // // `squares` stores the state of all 9 squares, allowing React to re-render when a square changes.
+  // const [squares, setSquares] = useState(Array(9).fill(null));
   
   // `handleClick` is called when any square is clicked. It updates the game board.
   function handleClick(i: number) {
@@ -43,9 +43,8 @@ export default function Board() {
       nextSquares[i] = "O";
     }
     // Tell React to update the squares, which will make the board re-render with the new 'X'.
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
-    console.log(nextSquares);  
+    onPlay(nextSquares);
+    //console.log(nextSquares);  
   }
 
   const winner = calculateWinner(squares);
@@ -82,6 +81,32 @@ export default function Board() {
     </>
   );
 }
+
+export default function Game(){
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const currentSquares = history[history.length - 1];
+
+  function handlePlay(nextSquares: string[]) {
+    setHistory([...history, nextSquares]);
+    setXIsNext(!xIsNext);
+    console.log(history);
+    console.log(nextSquares);
+  }
+
+  return(
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+      </div>
+      <div className="game-info">
+        <ol>{/*TODO: Display the move history here*/}</ol>
+      </div>
+    </div>
+  );
+}
+
+
 
 //function to calculate the winner
 function calculateWinner(squares: string[]) {
