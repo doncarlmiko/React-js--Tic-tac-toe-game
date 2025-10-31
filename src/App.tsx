@@ -20,11 +20,6 @@ function Square({value, onSquareClick}:{value:string, onSquareClick: () => void}
 
 // Board component: This is the main game area, managing all squares and game logic.
 function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean, squares: string[], onPlay: (nextSquares: string[]) => void }) {
-
-  // const [xIsNext, setXIsNext] = useState(true);
-  // // `squares` stores the state of all 9 squares, allowing React to re-render when a square changes.
-  // const [squares, setSquares] = useState(Array(9).fill(null));
-  
   // `handleClick` is called when any square is clicked. It updates the game board.
   function handleClick(i: number) {
     // We create a new array to represent the next state of the squares.
@@ -83,16 +78,34 @@ function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean, squares: string
 }
 
 export default function Game(){
-  const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];    
 
   function handlePlay(nextSquares: string[]) {
-    setHistory([...history, nextSquares]);
-    setXIsNext(!xIsNext);
-    console.log(history);
-    console.log(nextSquares);
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
   }
+
+  function jumpTo(nextMove: number) {
+    setCurrentMove(nextMove);
+  }
+  
+    const moves = history.map((squares, move) => {
+      let description: string;
+      if (move > 0) {
+        description = 'Go to move #' + move;
+      } else {
+        description = 'Go to game start';
+      }
+      return (
+        <li key={move}>
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        </li>
+      );
+    });
 
   return(
     <div className="game">
@@ -100,13 +113,11 @@ export default function Game(){
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
       </div>
       <div className="game-info">
-        <ol>{/*TODO: Display the move history here*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
 }
-
-
 
 //function to calculate the winner
 function calculateWinner(squares: string[]) {
